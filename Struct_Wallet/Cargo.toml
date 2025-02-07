@@ -1,0 +1,6 @@
+[package]
+name = "Struct_Wallet"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
