@@ -48,3 +48,11 @@ fn main() {
     println!("x coordinate of p0 (u32): {}", get_x_u32(p0)); // Calls concrete `get_x_u32`.
     println!("x coordinate of p1 (i32): {}", get_x_i32(p1)); // Calls concrete `get_x_i32`.
 }
+
+/*
+Monomorphization:- is a compilation strategy in languages like Rust where the compiler transforms generic code into specific, concrete implementations by substituting type parameters with actual types at compile time.
+For instance, a generic `struct Point<T>` used with `u32` and `i32` results in the compiler generating `Point<u32>` and `Point<i32>`, while a generic function like `fn get_x<T>(p: Point<T>) -> T` becomes separate functions like `get_x_u32` and `get_x_i32`, each tailored to the specific type.
+This process ensures type safety and eliminates runtime type resolution, producing optimized, type-specific code.
+The trade-off of monomorphization is increased compilation time and binary size due to the duplication of code for each type used, but it delivers significant performance benefits by avoiding runtime overhead, such as dynamic dispatch or type checking.
+In Rust, this technique allows developers to write flexible, reusable generic code while maintaining the efficiency of statically typed, non-generic implementations, striking a balance between versatility and performance.
+*/
