@@ -21,4 +21,13 @@ fn main() {
     let mut c = vec![7, 8, 9];
     c.push(10);
     println!("{:?}", c);
+
+    let vrr: Vec<&str> = vec!["abc", "xyz", "pqr"];
+    println!("vrr={:?}", vrr);
+    write_vrr(&vrr);
+    println!("vrr={:?}", vrr);
+}
+
+fn write_vrr(vrr2: &Vec<&str>) {
+    println!("vrr2={:?}", vrr2);
 }
