@@ -46,6 +46,9 @@ fn main() {
     let s6_len = borrow_item(&s6_var);
     // Print the value of s6_var and its length.
     println!("This is s6: {} having length {}", s6_var, s6_len);
+
+    change_owner();
+    borrow_variable1();
 }
 
 // Define a function get_string() that returns a String.
@@ -91,4 +94,63 @@ fn borrow_item(item: &String) -> usize {
     // Return the length of the string.
     // The reference is dropped when the function returns, and the original string remains unchanged.
     return item.len();
+}
+
+fn change_owner() {
+    // Create a String on the heap
+    let s1 = String::from("ChangeOwner");
+    // Ownership is MOVED from s1 to s2
+    // s1 is no longer valid after this line
+    // Only one owner at a time (prevents double-free errors)
+    let s2 = s1;
+    println!("s2 had value {}", s2);
+    // ERROR if we try to use s1 here:
+    // println!("s1 had value {}", s1); // Compile error: value borrowed after move
+}
+
+fn borrow_variable1() {
+    // Owner of the String (immutable)
+    let v1 = String::from("BorrowVariable");
+    // Owner of the String (mutable - can be modified)
+    let mut v1_testupdate = String::from("BorrowVariable Update");
+    // Immutable borrow - v2 is a reference to v1
+    // Multiple immutable borrows are allowed simultaneously
+    let v2 = &v1;
+    let v3 = &v1;
+    // All references and owner can be read
+    println!("v2 had value {}", v2);
+    println!("v3 had value {}", v3);
+    println!("v1 had value {}", v1);
+    // Pass immutable reference to function (v1 still owns the data)
+    borrow_variable2(&v1);
+    // v1 is still valid - ownership never moved
+    println!("v1 had value {}", v1);
+    // Pass mutable reference to function
+    // Only ONE mutable borrow allowed at a time
+    update_borrow_variable1(&mut v1_testupdate);
+    update_borrow_variable1(&mut v1_testupdate);
+    // After mutable borrow ends, owner can be used again
+    println!("v1_testupdate had value {}", v1_testupdate);
+}
+
+/// Takes an immutable reference (borrow) to a String
+/// Does not take ownership - original owner retains control
+/// 
+/// # Arguments
+/// * `bor_var` - Immutable reference to a String
+fn borrow_variable2(bor_var: &String) {
+    // Can read but cannot modify
+    println!("bor_var had value {}", bor_var);
+    // ERROR if we try to modify:
+    // bor_var.push_str("test"); // Compile error: cannot mutate through & reference
+}
+
+/// Takes a mutable reference (mutable borrow) to a String
+/// Can modify the String, but does not take ownership
+/// 
+/// # Arguments
+/// * `upd_var` - Mutable reference to a String
+fn update_borrow_variable1(upd_var: &mut String) {
+    // Can modify the String through mutable reference
+    upd_var.push_str(" test update");
 }

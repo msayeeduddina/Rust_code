@@ -24,10 +24,28 @@ fn main() {
 
     // Print the original array to show it remains unchanged
     println!("arr_str: {:?}", arr_str);
+
+    // Demonstrate character access in the String
+    check_char();
 }
 
 // Function that takes an array of 3 string slices by value
 // The array is copied into the function (since &str is Copy), so the original is not affected.
 fn read_arr_str(arr_str_param: [&str; 3]) {
     println!("arr_str_param: {:?}", arr_str_param);
+}
+
+/// Demonstrates character access in Rust strings
+/// Shows Option type and unwrap() method
+fn check_char() {
+    // String type - heap-allocated, growable UTF-8 string
+    // String::from() creates a String from a string literal
+    let greeting = String::from("Hello World");
+    // chars() returns an iterator over characters
+    // nth(1) gets the character at index 1 (0-indexed)
+    // Returns Option<char> - Some(char) if exists, None if out of bounds
+    let char1 = greeting.chars().nth(1);
+    // unwrap() extracts value from Option
+    // Panics if the value is None (use carefully!)
+    print!("char is {}", char1.unwrap());
 }
