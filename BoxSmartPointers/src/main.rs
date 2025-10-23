@@ -12,6 +12,19 @@ fn check_tree_node() {
         pub value: T, // payload
     }
 
+    // `T` is Rust’s way of saying “I’ll decide the real type later.”  
+    // It is a **generic type parameter**: a placeholder that lets you write one piece of code that the compiler can *monomorphize* (instantiate) for any concrete type you actually use.
+    // When you write `T` you are promising:
+    // 1. The same logic works no matter what `T` is.  
+    // 2. Callers choose the real type at compile time.  
+    // 3. Rust generates a specialized copy of the code for each concrete type used.
+    // You reach for `T` (or any other generic parameter name) whenever you want **reuse without runtime cost**:
+    // * Containers that hold any value (`Vec<T>`, `Option<T>`, `Box<T>`).  
+    // * Algorithms that operate on any numeric type (`fn max<T: Ord>(a: T, b: T) -> T`).  
+    // * Wrapper types that add behaviour (`struct TreeNode<T> { value: T, … }`).  
+    // * Traits that describe capabilities independent of the concrete type (`impl<T> Clone for MyType<T>`).
+    // In short, use `T` when you need **type-safe, zero-cost abstractions** that work for *any* type the caller supplies.
+
     impl <T> TreeNode<T> {
         // Constructor: create a leaf node with the given value
         pub fn new(value: T) -> Self {
