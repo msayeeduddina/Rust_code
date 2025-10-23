@@ -1,4 +1,6 @@
 use std::fs; // Import the 'fs' (filesystem) module from the standard library
+use std::io::{Write, BufReader, BufRead, ErrorKind};
+use std::fs::File;
 
 /// Generic Point struct with two type parameters.
 /// This demonstrates **Generics** in Rust, allowing the struct to hold different data types.
@@ -125,6 +127,60 @@ fn check_find_first_a() {
     }
 }
 
+fn extra_error_handling_demo() {
+    // ----- READING & WRITING TO FILES & ERROR HANDLING -----
+    // Rust doesn't have exceptions like other languages. It handles
+    // recoverable errors with Result and the panic! macro for
+    // unrecoverable errors
+    // When the panic! macro executes your program prints an error
+    // memory is cleaned up and the program quits
+    // panic!("Terrible Error");
+    // Accessing an index that doesn't exist calls panic
+    // let lil_arr = [1,2];
+    // println!("{}", lil_arr[10]);
+    // File to create
+    let path = "lines.txt";
+    // Result has 2 variants: Ok and Err
+    // enum Result<T, E> {
+    //   Ok(T),
+    //   Err(E),
+    // }
+    // T is the type of the success value, E is the error type
+    // Create the file; match on the Result to handle success or failure
+    let output = File::create(path);
+    let mut output = match output {
+        Ok(file) => file, // on success, bind the file handle
+            Err(error) => { // on failure, panic with a custom message
+                panic!("Problem creating file: {:?}", error);
+            }
+    };
+    // Write to the file; expect() panics with the given message if write! fails
+    write!(output, "Just some\nRandom Words").expect("Failed to write to file");
+    // Open the file for reading; unwrap() yields the file or panics on error
+    let input = File::open(path).unwrap();
+    let buffered = BufReader::new(input);
+    // Iterate over lines; each line is a Result<String, io::Error>
+    for line in buffered.lines() {
+        // unwrap() each line or panic if reading fails
+        println!("{}", line.unwrap());
+    }
+    // Demonstrate fine-grained error handling: retry creation if file not found
+    let output2 = File::create("rand.txt");
+    let output2 = match output2 {
+        Ok(file) => file, // success path
+            Err(error) => match error.kind() { // inspect the error kind
+                ErrorKind::NotFound => // file didn't exist; try to create it
+                    match File::create("rand.txt") {
+                        Ok(fc) => fc, // creation succeeded
+                            Err(e) => panic!("Can't create file: {:?}", e),
+                    },
+                    _other_error => panic!("Problem opening file: {:?}", error), // any other error
+            },
+    };
+}
+
+
+
 /// Main entry point of the program.
 fn main() {
     // Call function demonstrating generic struct usage
@@ -134,5 +190,6 @@ fn main() {
     // Call function demonstrating custom Option enum usage and handling
     check_find_first_a();
     // Calling this function would crash the program if "example.txt" is missing
-    // check_file_unsafe(); 
+    // check_file_unsafe();
+    extra_error_handling_demo(); 
 }
